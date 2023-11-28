@@ -242,6 +242,8 @@ public class Main {
                         break;
                     }
                 }
+                cache.remove(i);
+                break;
             }
             // if (cache.get(j).instructionId == AddStation[i].getInstructionId()) {
             // cache.get(j).writeResultClock = Main.clk;
