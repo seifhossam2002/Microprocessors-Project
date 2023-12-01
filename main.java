@@ -5,6 +5,8 @@ public class Main {
     static Memory memory;
     static FileOfRegisters fileOfRegisters;
     static ArrayList<Instruction> cache = new ArrayList<Instruction>();
+    static int pointerCache = 0;
+    static Queue<Instruction> queueInstructions;
     static ReservationArea[] MultiplyStation;
     static ReservationArea[] AddStation;
     static LoadBuffer[] LoadStation;
@@ -21,127 +23,143 @@ public class Main {
     public Main() {
         memory = new Memory();
         fileOfRegisters = new FileOfRegisters();
+        queueInstructions = new LinkedList<Instruction>();
     }
 
-    public static void issue() {
-        for (int i = 0; i < memory.counter; i++) {
-            String part = memory.memory[i];
+    public static void fetch() {
+        // for (int i = 0; i < memory.counter; i++) {
+        // String part = memory.memory[i];
+        // String[] parts = part.split(" ");
+        // Instruction instruction = new Instruction(parts[0], parts[1], parts[2],
+        // parts[3]);
+        // cache.add(instruction);
+        // instruction.issue = i + 1;
+        // }
+        if (pointerCache < memory.counter) {
+            String part = memory.memory[pointerCache];
             String[] parts = part.split(" ");
             Instruction instruction = new Instruction(parts[0], parts[1], parts[2], parts[3]);
             cache.add(instruction);
-            instruction.issue = i + 1;
+            queueInstructions.add(instruction);
+            pointerCache++;
         }
-        for (int i = 0; i < cache.size(); i++) {
-            Instruction instruction = cache.get(i);
-            if (instruction.inExecution == false) {
-                if (instruction.opcode.equals("L.D")) {
-                    for (int j = 0; j < LoadStation.length; j++) {
-                        if (LoadStation[j].busy == 0) {
-                            LoadStation[j].busy = 1;
-                            LoadStation[j].Address = Integer.parseInt(instruction.src1)
-                                    + Integer.parseInt(instruction.src2);
+    }
+
+    public static void issue() {
+        Instruction instruction = cache.get(pointerCache - 1);
+        queueInstructions.remove();
+        instruction.issue = pointerCache;
+        // for (int i = 0; i < cache.size(); i++) {
+        // if (instruction.inExecution == false) {
+        if (instruction.opcode.equals("L.D")) {
+            for (int j = 0; j < LoadStation.length; j++) {
+                if (LoadStation[j].busy == 0) {
+                    LoadStation[j].busy = 1;
+                    LoadStation[j].Address = Integer.parseInt(instruction.src1);
+                    // instruction.startExec = Main.clk;
+                    break;
+                }
+            }
+        } else if (instruction.opcode.equals("S.D")) {
+            for (int j = 0; j < StoreStation.length; j++) {
+                 if (StoreStation[j] == null) {
+                    StoreStation[j] = new StoreBuffer(instruction.instructionId, "S" + j, instruction.opcode);
+                }
+                if (StoreStation[j].busy == 0) {
+                    StoreStation[j].busy = 1;
+                    StoreStation[j].Address = Integer.parseInt(instruction.src1)
+                            + Integer.parseInt(instruction.src2);
+                    for (int k = 0; k < fileOfRegisters.size(); k++) {
+                        if (instruction.src1.equals(fileOfRegisters.get(k).getName())) {
+                            if (fileOfRegisters.get(k).getQueue().equals("0")) {
+                                StoreStation[j].value = Float.parseFloat(instruction.src1);
+                            }
 
                             // instruction.startExec = Main.clk;
                             break;
                         }
                     }
-                } else if (instruction.opcode.equals("S.D")) {
-                    for (int j = 0; j < StoreStation.length; j++) {
-                        if (StoreStation[j].busy == 0) {
-                            StoreStation[j].busy = 1;
-                            StoreStation[j].Address = Integer.parseInt(instruction.src1)
-                                    + Integer.parseInt(instruction.src2);
-                            for (int k = 0; k < fileOfRegisters.size(); k++) {
-                                if (instruction.src1.equals(fileOfRegisters.get(k).getName())) {
-                                    if (fileOfRegisters.get(k).getQueue().equals("0")) {
-                                        StoreStation[j].value = Float.parseFloat(instruction.src1);
-                                    }
+                }
+            }
+        } else if (instruction.opcode.equals("ADD.D") || instruction.opcode.equals("SUB.D")) {
+            for (int j = 0; j < AddStation.length; j++) {
+                if (AddStation[j] == null) {
+                    AddStation[j] = new ReservationArea(instruction.instructionId, "A" + j, instruction.opcode,
+                            0, 0, "0", "0", 0);
+                }
+                if (AddStation[j].busy == 0) {
+                    AddStation[j].busy = 1;
 
-                                    // instruction.startExec = Main.clk;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                } else if (instruction.opcode.equals("ADD.D") || instruction.opcode.equals("SUB.D")) {
-                    for (int j = 0; j < AddStation.length; j++) {
-                        if (AddStation[j] == null) {
-                            AddStation[j] = new ReservationArea(instruction.instructionId, "A" + j, instruction.opcode,
-                                    0, 0, "0", "0", 0);
-                        }
-                        if (AddStation[j].busy == 0) {
-                            AddStation[j].busy = 1;
-
-                            for (int k = 0; k < fileOfRegisters.size(); k++) {
-                                if (instruction.src1.equals(instruction.src2)) {
-                                    if (instruction.src1.equals(fileOfRegisters.get(k).getName())) {
-                                        if (fileOfRegisters.get(k).getQueue().equals("0")) {
-                                            AddStation[j].value_j = Float.parseFloat(instruction.src1);
-                                            AddStation[j].value_k = Float.parseFloat(instruction.src2);
-                                        } else {
-                                            AddStation[j].queue_j = fileOfRegisters.get(k).getQueue();
-                                            AddStation[j].queue_k = fileOfRegisters.get(k).getQueue();
-                                        }
-                                    }
+                    for (int k = 0; k < fileOfRegisters.size(); k++) {
+                        if (instruction.src1.equals(instruction.src2)) {
+                            if (instruction.src1.equals(fileOfRegisters.get(k).getName())) {
+                                if (fileOfRegisters.get(k).getQueue().equals("0")) {
+                                    AddStation[j].value_j = Float.parseFloat(instruction.src1);
+                                    AddStation[j].value_k = Float.parseFloat(instruction.src2);
                                 } else {
-                                    if (instruction.src1.equals(fileOfRegisters.get(k).getName())) {
-                                        if (fileOfRegisters.get(k).getQueue().equals("0")) {
-                                            AddStation[j].value_j = Float.parseFloat(instruction.src1);
-                                        } else {
-                                            AddStation[j].queue_j = fileOfRegisters.get(k).getQueue();
-                                        }
-                                    }
-                                    if (instruction.src2.equals(fileOfRegisters.get(k).getName())) {
-                                        if (fileOfRegisters.get(k).getQueue().equals("0")) {
-                                            AddStation[j].value_k = Float.parseFloat(instruction.src2);
-                                        } else {
-                                            AddStation[j].queue_k = fileOfRegisters.get(k).getQueue();
-                                        }
-                                    }
+                                    AddStation[j].queue_j = fileOfRegisters.get(k).getQueue();
+                                    AddStation[j].queue_k = fileOfRegisters.get(k).getQueue();
                                 }
                             }
-                            if (AddStation[j].getQueue_j().equals("0") &&
-                                    AddStation[j].getQueue_k().equals("0"))
-                                instruction.startExec = Main.clk;
-                            break;
-                        }
-                    }
-                } else if (instruction.opcode.equals("MUL.D") || instruction.opcode.equals("DIV.D")) {
-                    for (int j = 0; j < MultiplyStation.length; j++) {
-                        if (MultiplyStation[j] == null) {
-                            MultiplyStation[j] = new ReservationArea(instruction.instructionId, "A" + j,
-                                    instruction.opcode,
-                                    0, 0, "0", "0", 0);
-                        }
-                        if (MultiplyStation[j].busy == 0) {
-                            MultiplyStation[j].busy = 1;
-                            for (int k = 0; k < fileOfRegisters.size(); k++) {
-                                if (instruction.src1.equals(instruction.src2)) {
-                                    if (instruction.src1.equals(fileOfRegisters.get(k).getName())
-                                            && fileOfRegisters.get(k).getQueue().equals("0")) {
-                                        MultiplyStation[j].value_j = Float.parseFloat(instruction.src1);
-                                        MultiplyStation[j].value_k = Float.parseFloat(instruction.src2);
-                                    }
+                        } else {
+                            if (instruction.src1.equals(fileOfRegisters.get(k).getName())) {
+                                if (fileOfRegisters.get(k).getQueue().equals("0")) {
+                                    AddStation[j].value_j = Float.parseFloat(instruction.src1);
                                 } else {
-                                    if (instruction.src1.equals(fileOfRegisters.get(k).getName())
-                                            && fileOfRegisters.get(k).getQueue().equals("0")) {
-                                        MultiplyStation[j].value_j = Float.parseFloat(instruction.src1);
-                                    }
-                                    if (instruction.src2.equals(fileOfRegisters.get(k).getName())
-                                            && fileOfRegisters.get(k).getQueue().equals("0")) {
-                                        MultiplyStation[j].value_k = Float.parseFloat(instruction.src2);
-                                    }
+                                    AddStation[j].queue_j = fileOfRegisters.get(k).getQueue();
                                 }
                             }
-                            if (MultiplyStation[j].getQueue_j().equals("0") &&
-                                    MultiplyStation[j].getQueue_k().equals("0"))
-                                instruction.startExec = Main.clk;
-                            break;
+                            if (instruction.src2.equals(fileOfRegisters.get(k).getName())) {
+                                if (fileOfRegisters.get(k).getQueue().equals("0")) {
+                                    AddStation[j].value_k = Float.parseFloat(instruction.src2);
+                                } else {
+                                    AddStation[j].queue_k = fileOfRegisters.get(k).getQueue();
+                                }
+                            }
                         }
                     }
+                    if (AddStation[j].getQueue_j().equals("0") &&
+                            AddStation[j].getQueue_k().equals("0"))
+                        instruction.startExec = Main.clk;
+                    break;
+                }
+            }
+        } else if (instruction.opcode.equals("MUL.D") || instruction.opcode.equals("DIV.D")) {
+            for (int j = 0; j < MultiplyStation.length; j++) {
+                if (MultiplyStation[j] == null) {
+                    MultiplyStation[j] = new ReservationArea(instruction.instructionId, "M" + j,
+                            instruction.opcode,
+                            0, 0, "0", "0", 0);
+                }
+                if (MultiplyStation[j].busy == 0) {
+                    MultiplyStation[j].busy = 1;
+                    for (int k = 0; k < fileOfRegisters.size(); k++) {
+                        if (instruction.src1.equals(instruction.src2)) {
+                            if (instruction.src1.equals(fileOfRegisters.get(k).getName())
+                                    && fileOfRegisters.get(k).getQueue().equals("0")) {
+                                MultiplyStation[j].value_j = Float.parseFloat(instruction.src1);
+                                MultiplyStation[j].value_k = Float.parseFloat(instruction.src2);
+                            }
+                        } else {
+                            if (instruction.src1.equals(fileOfRegisters.get(k).getName())
+                                    && fileOfRegisters.get(k).getQueue().equals("0")) {
+                                MultiplyStation[j].value_j = Float.parseFloat(instruction.src1);
+                            }
+                            if (instruction.src2.equals(fileOfRegisters.get(k).getName())
+                                    && fileOfRegisters.get(k).getQueue().equals("0")) {
+                                MultiplyStation[j].value_k = Float.parseFloat(instruction.src2);
+                            }
+                        }
+                    }
+                    if (MultiplyStation[j].getQueue_j().equals("0") &&
+                            MultiplyStation[j].getQueue_k().equals("0"))
+                        instruction.startExec = Main.clk;
+                    break;
                 }
             }
         }
+        // }
+        // }
     }
 
     public static void execute() {
@@ -224,20 +242,20 @@ public class Main {
         for (int i = 0; i < cache.size(); i++) {
             if (cache.get(i).endExec < Main.clk && cache.get(i).writeResultClock == -1) {
                 cache.get(i).writeResultClock = Main.clk;
-                for(int j=0;j<AddStation.length;j++){
-                    if(AddStation[j].getInstructionId()==cache.get(i).instructionId){
-                        AddStation[j].busy=0;
+                for (int j = 0; j < AddStation.length; j++) {
+                    if (AddStation[j].getInstructionId() == cache.get(i).instructionId) {
+                        AddStation[j].busy = 0;
                         break;
                     }
                 }
-                for(int j=0;j<MultiplyStation.length;j++){
-                    if(MultiplyStation[j].getInstructionId()==cache.get(i).instructionId){
-                        MultiplyStation[j].busy=0;
+                for (int j = 0; j < MultiplyStation.length; j++) {
+                    if (MultiplyStation[j].getInstructionId() == cache.get(i).instructionId) {
+                        MultiplyStation[j].busy = 0;
                         break;
                     }
                 }
-                for(int j=0;j<fileOfRegisters.size();j++){
-                    if(fileOfRegisters.get(j).getName().equals(cache.get(i).dest)){
+                for (int j = 0; j < fileOfRegisters.size(); j++) {
+                    if (fileOfRegisters.get(j).getName().equals(cache.get(i).dest)) {
                         fileOfRegisters.get(j).setQueue("0");
                         break;
                     }
