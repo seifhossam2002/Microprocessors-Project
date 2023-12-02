@@ -1,17 +1,29 @@
 public class StoreBuffer {
-    int Address;
-    float value;
-    String queue;
-    int busy;
+    private int instructionId;
+    private String reservationAreaId;
+    private String Address;
+    private float value;
+    private String queue;
+    private int busy;
 
-    public StoreBuffer(int Address, float value, String queue, int busy) {
+    public StoreBuffer(int instructionId,String reservationAreaId, int busy, String Address, float value, String queue) {
+        this.instructionId = instructionId;
+        this.reservationAreaId = reservationAreaId;
         this.Address = Address;
         this.value = value;
         this.queue = queue;
         this.busy = busy;
     }
 
-    public int getAddress() {
+    public int getInstructionId() {
+        return instructionId;
+    }
+
+    public String getReservationAreaId() {
+        return reservationAreaId;
+    }
+
+    public String getAddress() {
         return Address;
     }
 
@@ -27,8 +39,12 @@ public class StoreBuffer {
         return busy;
     }
 
-    public void setAddress(int Address) {
+    public void setAddress(String Address) {
         this.Address = Address;
+    }
+
+    public void setInstructionId(int instructionId) {
+        this.instructionId = instructionId;
     }
 
     public void setValue(float value) {
@@ -43,5 +59,7 @@ public class StoreBuffer {
         this.busy = busy;
     }
 
-    
+    public void setReservationAreaId(String reservationAreaId) {
+        this.reservationAreaId = reservationAreaId;
+    }
 }

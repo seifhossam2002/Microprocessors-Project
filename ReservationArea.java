@@ -8,8 +8,8 @@ public class ReservationArea {
     String queue_k;
     int busy;
 
-    public ReservationArea(int instructionId, String reservationAreaId, String opcode, float value_j, float value_k,
-            String queue_j, String queue_k, int busy) {
+    public ReservationArea(int instructionId,String reservationAreaId,int busy, String opcode, float value_j, float value_k,
+            String queue_j, String queue_k) {
         this.instructionId = instructionId;
         this.reservationAreaId = reservationAreaId;
         this.opcode = opcode;
@@ -82,7 +82,7 @@ public class ReservationArea {
 
     @Override
     public String toString() {
-        return "ReservationArea [instructionId=" + instructionId + "reservationAreaId" + reservationAreaId + ", opcode="
+        return "ReservationArea [reservationAreaId" + reservationAreaId + ", opcode="
                 + opcode + ", value_j=" + value_j + ", value_k=" + value_k
                 + ", queue_j=" + queue_j + ", queue_k=" + queue_k + ", busy=" + busy + "]";
     }

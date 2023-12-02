@@ -1,5 +1,5 @@
 public class Instruction {
-    static int id = 1;
+    private static int id = 1;
     int instructionId;
     String opcode;
     String dest;
@@ -10,7 +10,6 @@ public class Instruction {
     int endExec;
     int writeResultClock;
     float result;
-    boolean inExecution;
 
     public Instruction(String opcode, String dest, String src1, String src2) {
         this.instructionId = id++;
@@ -23,7 +22,6 @@ public class Instruction {
         this.endExec = 0;
         this.writeResultClock = -1;
         this.result = 0f;
-        this.inExecution = false;
     }
 
     public String toString() {
