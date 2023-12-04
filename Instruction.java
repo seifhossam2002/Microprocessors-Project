@@ -25,6 +25,9 @@ public class Instruction {
     }
 
     public String toString() {
-        return this.opcode + " " + this.dest + " " + this.src1 + " " + this.src2;
+        return "Instruction" + this.instructionId + " " + this.opcode + " " + this.dest + " " + this.src1 + " "
+                + this.src2 + " "
+                + issue + " " + startExec + " "
+                + endExec + " " + writeResultClock;
     }
 }
