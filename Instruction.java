@@ -25,9 +25,9 @@ public class Instruction {
     }
 
     public String toString() {
-        return "Instruction" + this.instructionId + " " + this.opcode + " " + this.dest + " " + this.src1 + " "
-                + this.src2 + " "
-                + issue + " " + startExec + " "
-                + endExec + " " + writeResultClock;
+        return "Instruction: " + this.instructionId + " Opcode: " + this.opcode + " Dest: " + this.dest + " Src1: " + this.src1 + " Src2: "
+                + this.src2 + " Issue: "
+                + issue + " StartExec: " + startExec + " End Exec: "
+                + endExec + " Write Result: " + writeResultClock;
     }
 }

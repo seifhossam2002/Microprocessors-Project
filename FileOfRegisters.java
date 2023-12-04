@@ -71,6 +71,15 @@ public class FileOfRegisters extends ArrayList<Register> {
 		this.add(new Register("PC", 0, "0"));
 	}
 
+	public float getValueRegister(String registerName){
+		for(int i=0;i<this.size();i++){
+			if(this.get(i).getName().equals(registerName)){
+				return this.get(i).getValue();
+			}
+		}
+		return -1;
+	}
+
 	public void setValue(int index, int value) {
 		this.get(index).setValue(value);
 	}

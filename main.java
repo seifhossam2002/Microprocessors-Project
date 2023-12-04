@@ -39,6 +39,7 @@ public class Main {
                 fetch();
                 issue();
                 execute();
+
                 write();
             }
             System.out.println("CYCLE " + Main.clk);
@@ -234,52 +235,24 @@ public class Main {
             }
         } else if (instruction.opcode.equals("MUL.D") || instruction.opcode.equals("DIV.D")) {
             for (int i = 0; i < MultiplyStation.length; i++) {
-                // if (MultiplyStation[i] == null) {
-                // float srcVal1 = 0;
-                // float srcVal2 = 0;
-                // String srcQue1 = "0";
-                // String srcQue2 = "0";
-                // for (int j = 0; j < fileOfRegisters.size(); j++) {
-                // if (instruction.src1.equals(fileOfRegisters.get(j).getName())) {
-                // if (!fileOfRegisters.get(j).getQueue().equals("0")) {
-                // srcQue1 = fileOfRegisters.get(j).getQueue();
-                // } else {
-                // srcVal1 = fileOfRegisters.get(j).getValue();
-                // }
-                // }
-                // if (instruction.src2.equals(fileOfRegisters.get(j).getName())) {
-                // if (!fileOfRegisters.get(j).getQueue().equals("0")) {
-                // srcQue2 = fileOfRegisters.get(j).getQueue();
-                // } else {
-                // srcVal2 = fileOfRegisters.get(j).getValue();
-                // }
-                // }
-                // }
-                // MultiplyStation[i] = new ReservationArea(instruction.instructionId, "M" + i,
-                // 1, instruction.opcode,
-                // srcVal1, srcVal2, srcQue1, srcQue2);
-                // fileOfRegisters.get(i).setQueue("M" + i);
-                // isIssued = true;
-                // break;
-                // } else
                 if (MultiplyStation[i].busy == 0) {
                     MultiplyStation[i].busy = 1;
                     MultiplyStation[i].instructionId = instruction.instructionId;
-                    for (int k = 0; k < fileOfRegisters.size(); k++) {
-                        if (instruction.src1.equals(fileOfRegisters.get(k).getName())) {
-                            if (fileOfRegisters.get(k).getQueue().equals("0")) {
-                                MultiplyStation[i].value_j = Float.parseFloat(instruction.src1);
+                    for (int j = 0; j < fileOfRegisters.size(); j++) {
+                        if (instruction.src1.equals(fileOfRegisters.get(j).getName())) {
+                            if (fileOfRegisters.get(j).getQueue().equals("0")) {
+                                MultiplyStation[i].value_j = fileOfRegisters.get(j).getValue();
                                 MultiplyStation[i].queue_j = "0";
                             } else {
-                                MultiplyStation[i].queue_j = fileOfRegisters.get(k).getQueue();
+                                MultiplyStation[i].queue_j = fileOfRegisters.get(j).getQueue();
                             }
                         }
-                        if (instruction.src2.equals(fileOfRegisters.get(k).getName())) {
-                            if (fileOfRegisters.get(k).getQueue().equals("0")) {
-                                MultiplyStation[i].value_k = Float.parseFloat(instruction.src2);
+                        if (instruction.src2.equals(fileOfRegisters.get(j).getName())) {
+                            if (fileOfRegisters.get(j).getQueue().equals("0")) {
+                                MultiplyStation[i].value_k = fileOfRegisters.get(j).getValue();
                                 MultiplyStation[i].queue_k = "0";
                             } else {
-                                MultiplyStation[i].queue_k = fileOfRegisters.get(k).getQueue();
+                                MultiplyStation[i].queue_k = fileOfRegisters.get(j).getQueue();
                             }
                         }
                     }
@@ -418,18 +391,18 @@ public class Main {
                     if (setOfInstructions.get(i).dest.equals(fileOfRegisters.get(j).getName())) {
                         if (setOfInstructions.get(i).opcode.equals("ADD.D")
                                 || setOfInstructions.get(i).opcode.equals("ADDI")) {
-                            setOfInstructions.get(i).result = Float.parseFloat(setOfInstructions.get(i).src1)
-                                    + Float.parseFloat(setOfInstructions.get(i).src2);
+                            setOfInstructions.get(i).result = fileOfRegisters.getValueRegister(setOfInstructions.get(i).src1)
+                                    + fileOfRegisters.getValueRegister(setOfInstructions.get(i).src2);
                         } else if (setOfInstructions.get(i).opcode.equals("SUB.D")
                                 || setOfInstructions.get(i).opcode.equals("SUBI")) {
-                            setOfInstructions.get(i).result = Float.parseFloat(setOfInstructions.get(i).src1)
-                                    - Float.parseFloat(setOfInstructions.get(i).src2);
+                            setOfInstructions.get(i).result = fileOfRegisters.getValueRegister(setOfInstructions.get(i).src1)
+                                    - fileOfRegisters.getValueRegister(setOfInstructions.get(i).src2);
                         } else if (setOfInstructions.get(i).opcode.equals("MUL.D")) {
-                            setOfInstructions.get(i).result = Float.parseFloat(setOfInstructions.get(i).src1)
-                                    * Float.parseFloat(setOfInstructions.get(i).src2);
+                            setOfInstructions.get(i).result = fileOfRegisters.getValueRegister(setOfInstructions.get(i).src1)
+                                    * fileOfRegisters.getValueRegister(setOfInstructions.get(i).src2);
                         } else if (setOfInstructions.get(i).opcode.equals("DIV.D")) {
-                            setOfInstructions.get(i).result = Float.parseFloat(setOfInstructions.get(i).src1)
-                                    / Float.parseFloat(setOfInstructions.get(i).src2);
+                            setOfInstructions.get(i).result = fileOfRegisters.getValueRegister(setOfInstructions.get(i).src1)
+                                    / fileOfRegisters.getValueRegister(setOfInstructions.get(i).src2);
                         } else if (setOfInstructions.get(i).opcode.equals("L.D")) {
                             for (int k = 0; k < LoadStation.length; k++) {
                                 if (LoadStation[k].getInstructionId() == setOfInstructions.get(i).instructionId) {
@@ -498,7 +471,7 @@ public class Main {
 
                 if (myInstruction.opcode.charAt(0) == 'S') {
                     float myValue = -1;
-                    for (int j = 0; j < fileOfRegisters.size(); i++) {
+                    for (int j = 0; j < fileOfRegisters.size(); j++) {
                         if (myInstruction.dest.equals(fileOfRegisters.get(j).getName())) {
                             myValue = fileOfRegisters.get(j).getValue();
                             break;
