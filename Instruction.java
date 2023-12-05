@@ -10,6 +10,7 @@ public class Instruction {
     int endExec;
     int writeResultClock;
     float result;
+    boolean inExecution;
 
     public Instruction(String opcode, String dest, String src1, String src2) {
         this.instructionId = id++;
@@ -17,17 +18,18 @@ public class Instruction {
         this.dest = dest;
         this.src1 = src1;
         this.src2 = src2;
-        this.issue = 0;
-        this.startExec = 0;
-        this.endExec = 0;
+        this.issue = -1;
+        this.startExec = -1;
+        this.endExec = -1;
         this.writeResultClock = -1;
         this.result = 0f;
+        this.inExecution = false;
     }
 
     public String toString() {
         return "Instruction: " + this.instructionId + " Opcode: " + this.opcode + " Dest: " + this.dest + " Src1: " + this.src1 + " Src2: "
                 + this.src2 + " Issue: "
                 + issue + " StartExec: " + startExec + " End Exec: "
-                + endExec + " Write Result: " + writeResultClock;
+                + endExec + " Write Result Clock: " + writeResultClock;
     }
 }
