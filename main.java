@@ -399,7 +399,6 @@ public class Main {
                         } else if (setOfInstructions.get(i).opcode.equals("L.D")) {
                             for (int k = 0; k < LoadStation.length; k++) {
                                 if (LoadStation[k].getInstructionId() == setOfInstructions.get(i).instructionId) {
-                                    System.out.println(Integer.parseInt(LoadStation[k].getAddress()) + 1024);
                                     setOfInstructions.get(i).result = Float.parseFloat(memory.memory[Integer.parseInt(LoadStation[k].getAddress()) + 1024]);
                                     break;
                                 }

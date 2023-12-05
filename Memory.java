@@ -11,6 +11,9 @@ public class Memory {
 
     public Memory() {
         memory = new String[2048];
+        for(int i=1024;i<1024+64;i++){
+            memory[i] = "0";
+        }
         try {
             readassembltfile();
         } catch (FileNotFoundException e) {
