@@ -119,7 +119,7 @@ public class Main {
 
     public static void issue() {
         // before I continue I need to check if the pointer is equal to the size of the memory for null pointer exception
-        if(pointerCache == memory.counter)
+        if(pointerCache == memory.counter+1)
             return;
         // Instruction instruction = cache.get(pointerCache - 1);
         Instruction instruction = queueInstructions.peek();
@@ -235,7 +235,18 @@ public class Main {
         if (isIssued) {
             for(int i=0;i<fileOfRegisters.size();i++){
                 if(fileOfRegisters.get(i).getName().equals(instruction.dest)){
-                    fileOfRegisters.get(i).setQueue(instruction.opcode.charAt(0)+""+indexReservation);
+                    String reservationString = "";
+                    if(instruction.opcode.charAt(0) == 'S')
+                        reservationString = "S"+indexReservation;
+                    else if(instruction.opcode.charAt(0) == 'L')
+                        reservationString = "L"+indexReservation;
+                    else if(instruction.opcode.charAt(0) == 'A')
+                        reservationString = "A"+indexReservation;
+                    else if(instruction.opcode.charAt(0) == 'M')
+                        reservationString = "M"+indexReservation;
+                    else if(instruction.opcode.charAt(0) == 'D')
+                        reservationString = "D"+indexReservation;
+                    fileOfRegisters.get(i).setQueue(reservationString);
                     break;
                 }
             }
