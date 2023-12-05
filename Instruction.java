@@ -1,6 +1,7 @@
 public class Instruction {
     private static int id = 1;
     int instructionId;
+    String reservationName;
     String opcode;
     String dest;
     String src1;
@@ -24,10 +25,12 @@ public class Instruction {
         this.writeResultClock = -1;
         this.result = 0f;
         this.inExecution = false;
+        this.reservationName = "";
     }
 
     public String toString() {
-        return "Instruction: " + this.instructionId + " Opcode: " + this.opcode + " Dest: " + this.dest + " Src1: " + this.src1 + " Src2: "
+        return "Instruction: " + this.instructionId + " Opcode: " + this.opcode + " Dest: " + this.dest + " Src1: "
+                + this.src1 + " Src2: "
                 + this.src2 + " Issue: "
                 + issue + " StartExec: " + startExec + " End Exec: "
                 + endExec + " Write Result Clock: " + writeResultClock;
