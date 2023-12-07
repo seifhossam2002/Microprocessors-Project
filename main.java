@@ -18,10 +18,12 @@ public class Main {
     private static int latencySubi;
     private static int latencyStore;
     private static int latencyLoad;
-    private static int latencyAdd;
+    private static int latencyAddD;
+    private static int latencyDAdd;
     private static int latencyMul;
     private static int latencyDiv;
     private static int latencyBranch;
+    private static boolean stall = false;
 
     public Main() {
         memory = new Memory();
@@ -101,14 +103,26 @@ public class Main {
         // cache.add(instruction);
         // instruction.issue = i + 1;
         // }
-        if (pointerCache < memory.counter) {
+        if (pointerCache < memory.counter && !stall) {
             String part = memory.memory[pointerCache];
             String[] parts = part.split(" ");
             Instruction instruction;
-            if (parts.length == 3)
-                instruction = new Instruction(parts[0], parts[1], parts[2], "");
+
+            int startIndex = 0;
+
+            if (parts[0].equals("ADDI") || parts[0].equals("SUBI") || parts[0].equals("BNEZ") || parts[0].equals("L.D")
+                    || parts[0].equals("S.D") || parts[0].equals("MUL.D") || parts[0].equals("DIV.D")
+                    || parts[0].equals("ADD.D") || parts[0].equals("SUB.D")
+                    || parts[0].equals("DADD"))
+                startIndex = 0;
             else
-                instruction = new Instruction(parts[0], parts[1], parts[2], parts[3]);
+                startIndex = 1;
+
+            if (parts.length == 3)
+                instruction = new Instruction(parts[startIndex], parts[startIndex + 1], parts[startIndex + 2], "");
+            else
+                instruction = new Instruction(parts[startIndex], parts[startIndex + 1], parts[startIndex + 2],
+                        parts[startIndex + 3]);
 
             tableOfInstructions.add(instruction);
             setOfInstructions.add(instruction);
@@ -172,7 +186,7 @@ public class Main {
             }
         } else if (instruction.opcode.equals("ADD.D") || instruction.opcode.equals("SUB.D")
                 || instruction.opcode.equals("ADDI") || instruction.opcode.equals("SUBI")
-                || instruction.opcode.equals("BNEZ")) {
+                || instruction.opcode.equals("BNEZ") || instruction.opcode.equals("DADD")) {
             for (int i = 0; i < AddStation.length; i++) {
                 if (AddStation[i].busy == 0) {
                     AddStation[i].busy = 1;
@@ -185,8 +199,7 @@ public class Main {
                                 if (fileOfRegisters.get(k).getQueue().equals("0")) {
                                     AddStation[i].value_j = fileOfRegisters.getValueRegister(instruction.dest);
                                     AddStation[i].queue_j = "0";
-                                }
-                                else{
+                                } else {
                                     AddStation[i].queue_j = fileOfRegisters.get(k).getQueue();
                                 }
                             }
@@ -270,6 +283,8 @@ public class Main {
                 }
             }
             queueInstructions.remove();
+            if (instruction.opcode.equals("BNEZ"))
+                stall = true;
         }
         // }
         // }
@@ -316,7 +331,7 @@ public class Main {
             if (AddStation[i].busy == 1) {
                 if (AddStation[i].getQueue_j().equals("0") &&
                         AddStation[i].getQueue_k().equals("0")) {
-                    if (AddStation[i].opcode.equals("ADD.D")) {
+                    if (AddStation[i].opcode.equals("ADD.D") || AddStation[i].opcode.equals("SUB.D")) {
                         // float result = 0;
                         // result = AddStation[i].value_j + AddStation[i].value_k;
                         for (int j = 0; j < setOfInstructions.size(); j++) {
@@ -326,12 +341,12 @@ public class Main {
                                     && setOfInstructions.get(j).endExec == -1) {
                                 // setOfInstructions.get(j).result = result;
                                 setOfInstructions.get(j).startExec = Main.clk;
-                                setOfInstructions.get(j).endExec = Main.clk + latencyAdd - 1;
+                                setOfInstructions.get(j).endExec = Main.clk + latencyAddD - 1;
                                 setOfInstructions.get(j).inExecution = true;
                                 break;
                             }
                         }
-                    } else if (AddStation[i].opcode.equals("SUB.D")) {
+                    } else if (AddStation[i].opcode.equals("DADD")) {
                         // float result = 0;
                         // result = AddStation[i].value_j - AddStation[i].value_k;
                         for (int j = 0; j < setOfInstructions.size(); j++) {
@@ -341,7 +356,7 @@ public class Main {
                                     && setOfInstructions.get(j).endExec == -1) {
                                 // setOfInstructions.get(j).result = result;
                                 setOfInstructions.get(j).startExec = Main.clk;
-                                setOfInstructions.get(j).endExec = Main.clk + latencyAdd - 1;
+                                setOfInstructions.get(j).endExec = Main.clk + latencyDAdd - 1;
                                 setOfInstructions.get(j).inExecution = true;
                                 break;
                             }
@@ -434,7 +449,7 @@ public class Main {
 
         for (int i = 0; i < setOfInstructions.size(); i++) {
             if (setOfInstructions.get(i).endExec == Main.clk && setOfInstructions.get(i).writeResultClock == -1
-                     && setOfInstructions.get(i).startExec != -1) {
+                    && setOfInstructions.get(i).startExec != -1) {
 
                 for (int j = 0; j < fileOfRegisters.size(); j++) {
                     if (setOfInstructions.get(i).dest.equals(fileOfRegisters.get(j).getName())) {
@@ -444,34 +459,35 @@ public class Main {
                                     .getValueRegister(setOfInstructions.get(i).src1)
                                     + fileOfRegisters.getValueRegister(setOfInstructions.get(i).src2);
                         } else if (setOfInstructions.get(i).opcode.equals("BNEZ")) {
-                            if (fileOfRegisters.getValueRegister(setOfInstructions.get(i).dest) != 0)
-                                setOfInstructions.get(i).result = 1;
-                            else {
-                                setOfInstructions.get(i).result = 0;
+                            if (fileOfRegisters.getValueRegister(setOfInstructions.get(i).dest) != 0) {
+                                pointerCache = 0;
                             }
-                        } else if (setOfInstructions.get(i).opcode.equals("ADDI")) {
-                            setOfInstructions.get(i).result = fileOfRegisters
-                                    .getValueRegister(setOfInstructions.get(i).src1)
-                                    + Float.parseFloat(setOfInstructions.get(i).src2);
-                        } else if (setOfInstructions.get(i).opcode.equals("SUB.D")) {
-                            setOfInstructions.get(i).result = fileOfRegisters
-                                    .getValueRegister(setOfInstructions.get(i).src1)
-                                    - fileOfRegisters.getValueRegister(setOfInstructions.get(i).src2);
-                        } else if (setOfInstructions.get(i).opcode.equals("SUBI")) {
-                            setOfInstructions.get(i).result = fileOfRegisters
-                                    .getValueRegister(setOfInstructions.get(i).src1)
-                                    - Float.parseFloat(setOfInstructions.get(i).src2);
-                        } else if (setOfInstructions.get(i).opcode.equals("MUL.D")) {
-                            setOfInstructions.get(i).result = fileOfRegisters
-                                    .getValueRegister(setOfInstructions.get(i).src1)
-                                    * fileOfRegisters.getValueRegister(setOfInstructions.get(i).src2);
-                        } else if (setOfInstructions.get(i).opcode.equals("L.D")) {
-                            for (int k = 0; k < LoadStation.length; k++) {
-                                if (LoadStation[k].getInstructionId() == setOfInstructions.get(i).instructionId) {
-                                    setOfInstructions.get(i).result = Float.parseFloat(
-                                            memory.memory[Integer.parseInt(LoadStation[k].getAddress()) + 1024]);
-                                    break;
-                                }
+                            stall = false;
+                            setOfInstructions.remove(setOfInstructions.get(i));
+                            i--;
+                        }
+                    } else if (setOfInstructions.get(i).opcode.equals("ADDI")) {
+                        setOfInstructions.get(i).result = fileOfRegisters
+                                .getValueRegister(setOfInstructions.get(i).src1)
+                                + Float.parseFloat(setOfInstructions.get(i).src2);
+                    } else if (setOfInstructions.get(i).opcode.equals("SUB.D")) {
+                        setOfInstructions.get(i).result = fileOfRegisters
+                                .getValueRegister(setOfInstructions.get(i).src1)
+                                - fileOfRegisters.getValueRegister(setOfInstructions.get(i).src2);
+                    } else if (setOfInstructions.get(i).opcode.equals("SUBI")) {
+                        setOfInstructions.get(i).result = fileOfRegisters
+                                .getValueRegister(setOfInstructions.get(i).src1)
+                                - Float.parseFloat(setOfInstructions.get(i).src2);
+                    } else if (setOfInstructions.get(i).opcode.equals("MUL.D")) {
+                        setOfInstructions.get(i).result = fileOfRegisters
+                                .getValueRegister(setOfInstructions.get(i).src1)
+                                * fileOfRegisters.getValueRegister(setOfInstructions.get(i).src2);
+                    } else if (setOfInstructions.get(i).opcode.equals("L.D")) {
+                        for (int k = 0; k < LoadStation.length; k++) {
+                            if (LoadStation[k].getInstructionId() == setOfInstructions.get(i).instructionId) {
+                                setOfInstructions.get(i).result = Float.parseFloat(
+                                        memory.memory[Integer.parseInt(LoadStation[k].getAddress()) + 1024]);
+                                break;
                             }
                         }
                     }
@@ -487,13 +503,13 @@ public class Main {
                     && !setOfInstructions.get(i).inExecution && setOfInstructions.get(i).startExec != -1) {
                 setOfInstructions.get(i).writeResultClock = Main.clk;
                 myInstruction = setOfInstructions.get(i);
-                if (myInstruction.opcode.equals("BNEZ")) {
-                    if (myInstruction.result == 1) {
-                        pointerCache = 0;
-                    }
-                    setOfInstructions.remove(myInstruction);
-                    return;
-                }
+                // if (myInstruction.opcode.equals("BNEZ")) {
+                // if (myInstruction.result == 1) {
+                // pointerCache = 0;
+                // }
+                // setOfInstructions.remove(myInstruction);
+                // return;
+                // }
                 for (int j = 0; j < fileOfRegisters.size(); j++) {
                     if (setOfInstructions.get(i).dest.equals(fileOfRegisters.get(j).getName())) {
 
@@ -659,9 +675,12 @@ public class Main {
             System.out.println("Enter the latency of Mul");
             // latencyMul = sc.nextInt();
             latencyMul = 6;
-            System.out.println("Enter the latency of Add or Sub");
+            System.out.println("Enter the latency of Add.D or Sub.D");
             // latencyAdd = sc.nextInt();
-            latencyAdd = 4;
+            latencyAddD = 4;
+            System.out.println("Enter the latency of DAdd");
+            // latencyDAdd = sc.nextInt();
+            latencyDAdd = 4;
             System.out.println("Enter the latency of Load");
             // latencyLoad = sc.nextInt();
             latencyLoad = 2;
