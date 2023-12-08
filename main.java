@@ -108,21 +108,24 @@ public class Main {
             String[] parts = part.split(" ");
             Instruction instruction;
 
-            int startIndex = 0;
+            int isLoop = 0;
 
-            if (parts[0].equals("ADDI") || parts[0].equals("SUBI") || parts[0].equals("BNEZ") || parts[0].equals("L.D")
+            if (!(parts[0].equals("ADDI") || parts[0].equals("SUBI") || parts[0].equals("BNEZ")
+                    || parts[0].equals("L.D")
                     || parts[0].equals("S.D") || parts[0].equals("MUL.D") || parts[0].equals("DIV.D")
                     || parts[0].equals("ADD.D") || parts[0].equals("SUB.D")
-                    || parts[0].equals("DADD"))
-                startIndex = 0;
-            else
-                startIndex = 1;
+                    || parts[0].equals("DADD")))
+                isLoop = 1;
 
-            if (parts.length == 3)
-                instruction = new Instruction(parts[startIndex], parts[startIndex + 1], parts[startIndex + 2], "");
+            if (parts.length == 3 && isLoop == 0)
+                instruction = new Instruction(parts[0], parts[1], parts[2], "");
+            else if (parts.length == 4 && isLoop == 1)
+                instruction = new Instruction(parts[isLoop + 0], parts[isLoop + 1], parts[isLoop + 2], "");
+            else if (parts.length == 4 && isLoop == 0)
+                instruction = new Instruction(parts[0], parts[1], parts[2], parts[3]);
             else
-                instruction = new Instruction(parts[startIndex], parts[startIndex + 1], parts[startIndex + 2],
-                        parts[startIndex + 3]);
+                instruction = new Instruction(parts[isLoop + 0], parts[isLoop + 1], parts[isLoop + 2],
+                        parts[isLoop + 3]);
 
             tableOfInstructions.add(instruction);
             setOfInstructions.add(instruction);
@@ -269,7 +272,9 @@ public class Main {
             for (int i = 0; i < fileOfRegisters.size(); i++) {
                 if (fileOfRegisters.get(i).getName().equals(instruction.dest)) {
                     String reservationString = "";
-                    if (instruction.opcode.charAt(0) == 'S' || instruction.opcode.charAt(0) == 'A'
+                    if (instruction.opcode.equals("S.D"))
+                        reservationString = "S" + indexReservation;
+                    else if (instruction.opcode.charAt(0) == 'S' || instruction.opcode.charAt(0) == 'A'
                             || instruction.opcode.charAt(0) == 'B')
                         reservationString = "A" + indexReservation;
                     else if (instruction.opcode.charAt(0) == 'L')
@@ -662,35 +667,35 @@ public class Main {
         try (Scanner sc = new Scanner(System.in)) {
             System.out.println("Enter the Multiply Station number");
             // int multiplyNumber = sc.nextInt();
-            int multiplyNumber = 2;
+            int multiplyNumber = 3;
             System.out.println("Enter the Add Station number");
             // int addNumber = sc.nextInt();
             int addNumber = 3;
             System.out.println("Enter the Load Station number");
             // int loadNumber = sc.nextInt();
-            int loadNumber = 3;
+            int loadNumber = 2;
             System.out.println("Enter the Store Station number");
             // int storeNumber = sc.nextInt();
             int storeNumber = 3;
             System.out.println("Enter the latency of Mul");
             // latencyMul = sc.nextInt();
-            latencyMul = 6;
+            latencyMul = 4;
             System.out.println("Enter the latency of Add.D or Sub.D");
             // latencyAdd = sc.nextInt();
-            latencyAddD = 4;
+            latencyAddD = 2;
             System.out.println("Enter the latency of DAdd");
             // latencyDAdd = sc.nextInt();
-            latencyDAdd = 4;
+            latencyDAdd = 2;
             System.out.println("Enter the latency of Load");
             // latencyLoad = sc.nextInt();
-            latencyLoad = 2;
+            latencyLoad = 1;
             System.out.println("Enter the latency of Store");
             // latencyStore = sc.nextInt();
-            latencyStore = 2;
+            latencyStore = 1;
 
             System.out.println("Enter the latency of Div");
             // latencyDiv = sc.nextInt();
-            latencyDiv = 40;
+            latencyDiv = 5;
 
             latencyAddi = 1;
             latencySubi = 1;

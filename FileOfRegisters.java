@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class FileOfRegisters extends ArrayList<Register> {
 	public FileOfRegisters() {
 		this.add(new Register("R0", 0, "0"));
-		this.add(new Register("R1", 16, "0"));
+		this.add(new Register("R1", 3, "0"));
 		this.add(new Register("R2", 0, "0"));
 		this.add(new Register("R3", 0, "0"));
 		this.add(new Register("R4", 0, "0"));
@@ -35,11 +35,11 @@ public class FileOfRegisters extends ArrayList<Register> {
 		this.add(new Register("R30", 0, "0"));
 		this.add(new Register("R31", 0, "0"));
 
-		this.add(new Register("F0", 0, "0"));
+		this.add(new Register("F0", 1, "0"));
 		this.add(new Register("F1", 0, "0"));
-		this.add(new Register("F2", 0, "0"));
+		this.add(new Register("F2", 2, "0"));
 		this.add(new Register("F3", 0, "0"));
-		this.add(new Register("F4", 0, "0"));
+		this.add(new Register("F4", 2, "0"));
 		this.add(new Register("F5", 0, "0"));
 		this.add(new Register("F6", 0, "0"));
 		this.add(new Register("F7", 0, "0"));
