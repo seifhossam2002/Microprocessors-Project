@@ -24,6 +24,7 @@ public class ReservationAreaGUI extends JFrame {
     private JTable instructionsTable;
     private JTable inputsTable;
     private JLabel cycleLabel;
+    private JButton nextButton;
     private int currentCycle = 0;
     private Main main;
     private static int inputValues = 0;
@@ -100,7 +101,7 @@ public class ReservationAreaGUI extends JFrame {
         panel.add(cycleLabel);
 
         // Add next and previous buttons
-        JButton nextButton = new JButton("Next Cycle");
+        nextButton = new JButton("Next Cycle");
 
         nextButton.addActionListener(e -> {
             currentCycle++;
@@ -116,6 +117,7 @@ public class ReservationAreaGUI extends JFrame {
             Main.clk++;
             updateInstructionTable();
             updateReservationAreaTables();
+            nextButton.setEnabled(!Main.setOfInstructions.isEmpty());
         });
 
         JPanel buttonPanel = new JPanel();
