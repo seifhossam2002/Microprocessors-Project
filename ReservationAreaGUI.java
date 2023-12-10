@@ -117,7 +117,8 @@ public class ReservationAreaGUI extends JFrame {
             Main.clk++;
             updateInstructionTable();
             updateReservationAreaTables();
-            nextButton.setEnabled(!Main.setOfInstructions.isEmpty());
+            updateRegisterTables();
+            // nextButton.setEnabled(!Main.setOfInstructions.isEmpty());
         });
 
         JPanel buttonPanel = new JPanel();
@@ -223,6 +224,7 @@ public class ReservationAreaGUI extends JFrame {
             Register registerF = fileOfRegisters.get(i + 32);
             registerRTableModel.setValueAt(registerR.getName(), i, 0);
             registerRTableModel.setValueAt(registerR.getValue(), i, 1);
+            System.out.println(registerR.getValue());
             registerRTableModel.setValueAt(registerR.getQueue(), i, 2);
             registerFTableModel.setValueAt(registerF.getName(), i, 0);
             registerFTableModel.setValueAt(registerF.getValue(), i, 1);
@@ -350,8 +352,6 @@ public class ReservationAreaGUI extends JFrame {
 
     public void updateRegisterTables() {
         // Implement this method based on the data structures and logic in your program
-        removeAllRows(registerFTableModel);
-        removeAllRows(registerRTableModel);
         populateRegisterTables();
     }
 
