@@ -13,10 +13,10 @@ public class Memory {
         memory = new String[2048];
         for(int i=1024;i<1024+64;i++){
             memory[i] = "0";
-            if(i==1024+0)
-                memory[i] = "1";
-            if(i==1024+4)
-                memory[i] = "0";
+            if(i==1024+2)
+                memory[i] = "2";
+            if(i==1024+5)
+                memory[i] = "3";
         }
         try {
             readassembltfile();

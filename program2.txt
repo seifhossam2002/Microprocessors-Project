@@ -1,0 +1,28 @@
+L.D F6, 2 // F6 = 2
+L.D F2, 5 // F2 = 5
+MUL.D F0, F2, F4 // 5*4 = 20
+SUB.D F8, F2, F6 // 5-2 = 3
+MUL.D F10, F0, F6 // 20*2 = 40
+ADD.D F6, F8, F2 // 3+5 = 8
+
+addLatency = 2
+subLatency = 2
+mulLatency = 5
+divLatency = 5
+loadLatency = 2
+
+3 loadBuffers
+3 addSubRs
+3 mulDivRS
+
+F0 = 0    20
+F2        5
+F4 = 4
+F6        2
+F8        3
+F10       40
+
+LOCATION 2 IN CACHE = 2
+LOCATION 5 IN CACHE = 5
+
+

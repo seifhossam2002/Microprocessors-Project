@@ -1,0 +1,23 @@
+LOOP: L.D F0,0 //F0 = 1
+MUL.D F4, F0, F2 //1*2 = 2
+S.D F4, 4
+SUBI R1, R1, 1
+BNEZ R1, LOOP
+
+
+
+R1 = 3
+
+
+F0 =      1
+F2 = 2
+F4 =      2
+
+
+
+LOCATION 0 IN CACHE = 1
+LOCATION 4 IN CACHE = 0 INITIALLY THEN 2
+
+mulLatency = 4
+subLatency = 2
+loadLatency = 1

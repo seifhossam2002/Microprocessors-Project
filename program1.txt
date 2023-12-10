@@ -1,0 +1,21 @@
+MUL.D F3, F1, F2 //1*2 = 2
+ADD.D F5, F3, F4 //2+4 = 6
+ADD.D F7, F2, F6 //2+6 = 8
+ADD.D F10, F8, F9 //8+9 = 17
+MUL.D F11, F7, F10 //8*17 = 136
+ADD.D F5, F5, F11 //6+25 = 17
+
+mulLatency = 6
+addLatency = 4
+
+
+F1 = 1
+F2 = 2
+F3 =     2
+F4 = 4
+F5 =     6
+F6 = 6
+F8 = 8
+F9 = 9
+F10 = 10
+F11 =    136

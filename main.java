@@ -14,16 +14,16 @@ public class Main {
     static ReservationArea[] AddStation;
     static LoadBuffer[] LoadStation;
     static StoreBuffer[] StoreStation;
-    private static int latencyAddi;
-    private static int latencySubi;
-    private static int latencyStore;
-    private static int latencyLoad;
-    private static int latencyAddD;
-    private static int latencyDAdd;
-    private static int latencyMul;
-    private static int latencyDiv;
-    private static int latencyBranch;
-    private static boolean stall = false;
+    static int latencyAddi;
+    static int latencySubi;
+    static int latencyStore;
+    static int latencyLoad;
+    static int latencyAddD;
+    static int latencyDAdd;
+    static int latencyMul;
+    static int latencyDiv;
+    static int latencyBranch;
+    static boolean stall = false;
 
     public Main() {
         memory = new Memory();
@@ -31,12 +31,12 @@ public class Main {
         queueInstructions = new LinkedList<Instruction>();
         setOfInstructions = new ArrayList<Instruction>();
         tableOfInstructions = new ArrayList<Instruction>();
+        initialize();
     }
 
     // print the result but i need to call the fetch issue execute write while
     // keeping track of the Main.clk
     public static void printProcessorState() {
-        initialize();
         do {
             System.out.println("CYCLE " + Main.clk);
 
@@ -65,6 +65,36 @@ public class Main {
             while (!temp.isEmpty()) {
                 queueInstructions.add(temp.remove());
             }
+        System.out.println("Load Reservation Stations: ");
+            for(int i=0;i<LoadStation.length;i++){
+                System.out.println(LoadStation[i]);
+            }
+            System.out.println("Store Reservation Stations: ");
+            for(int i=0;i<StoreStation.length;i++){
+                System.out.println(StoreStation[i]);
+            }
+            System.out.println("Add Reservation Stations: ");
+            for(int i=0;i<AddStation.length;i++){
+                System.out.println(AddStation[i]);
+            }
+            System.out.println("Multiply Reservation Stations: ");
+            for(int i=0;i<MultiplyStation.length;i++){
+                System.out.println(MultiplyStation[i]);
+            }
+            System.out.println("File of Registers: ");
+            for(int i=0;i<fileOfRegisters.size();i++){
+                System.out.println(fileOfRegisters.get(i));
+            }
+            System.out.println("-------------------------------------------------");
+            for(int i=0;i<MultiplyStation.length;i++){
+                System.out.println(MultiplyStation[i]);
+            }
+            System.out.println("-------------------------------------------------");
+            for(int i=0;i<AddStation.length;i++){
+                System.out.println(AddStation[i]);
+            }
+            System.out.println("-------------------------------------------------");
+            
             Main.clk++;
         } while (!setOfInstructions.isEmpty());
     }
@@ -673,13 +703,13 @@ public class Main {
             int addNumber = 3;
             System.out.println("Enter the Load Station number");
             // int loadNumber = sc.nextInt();
-            int loadNumber = 2;
+            int loadNumber = 3;
             System.out.println("Enter the Store Station number");
             // int storeNumber = sc.nextInt();
             int storeNumber = 3;
             System.out.println("Enter the latency of Mul");
             // latencyMul = sc.nextInt();
-            latencyMul = 4;
+            latencyMul = 5;
             System.out.println("Enter the latency of Add.D or Sub.D");
             // latencyAdd = sc.nextInt();
             latencyAddD = 2;
@@ -688,10 +718,10 @@ public class Main {
             latencyDAdd = 2;
             System.out.println("Enter the latency of Load");
             // latencyLoad = sc.nextInt();
-            latencyLoad = 1;
+            latencyLoad = 2;
             System.out.println("Enter the latency of Store");
             // latencyStore = sc.nextInt();
-            latencyStore = 1;
+            latencyStore = 2;
 
             System.out.println("Enter the latency of Div");
             // latencyDiv = sc.nextInt();
