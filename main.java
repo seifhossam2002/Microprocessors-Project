@@ -41,7 +41,8 @@ public class Main {
             System.out.println("CYCLE " + Main.clk);
 
             fetch();
-            issue();
+            if (!stall)
+                issue();
             execute();
 
             // 3lshan 2abl ma 2write lazem 2t2kd en el instruction msh f el execution
@@ -65,38 +66,38 @@ public class Main {
             while (!temp.isEmpty()) {
                 queueInstructions.add(temp.remove());
             }
-            System.out.println("Load Reservation Stations: ");
-            for (int i = 0; i < LoadStation.length; i++) {
-                System.out.println(LoadStation[i]);
-            }
-            System.out.println("Store Reservation Stations: ");
-            for (int i = 0; i < StoreStation.length; i++) {
-                System.out.println(StoreStation[i]);
-            }
-            System.out.println("Add Reservation Stations: ");
-            for (int i = 0; i < AddStation.length; i++) {
-                System.out.println(AddStation[i]);
-            }
-            System.out.println("Multiply Reservation Stations: ");
-            for (int i = 0; i < MultiplyStation.length; i++) {
-                System.out.println(MultiplyStation[i]);
-            }
-            System.out.println("File of Registers: ");
+            // System.out.println("Load Reservation Stations: ");
+            // for (int i = 0; i < LoadStation.length; i++) {
+            // System.out.println(LoadStation[i]);
+            // }
+            // System.out.println("Store Reservation Stations: ");
+            // for (int i = 0; i < StoreStation.length; i++) {
+            // System.out.println(StoreStation[i]);
+            // }
+            // System.out.println("Add Reservation Stations: ");
+            // for (int i = 0; i < AddStation.length; i++) {
+            // System.out.println(AddStation[i]);
+            // }
+            // System.out.println("Multiply Reservation Stations: ");
+            // for (int i = 0; i < MultiplyStation.length; i++) {
+            // System.out.println(MultiplyStation[i]);
+            // }
+            // System.out.println("File of Registers: ");
             // for(int i=0;i<fileOfRegisters.size();i++){
             // System.out.println(fileOfRegisters.get(i));
             // }
             System.out.println("-------------------------------------------------");
-            for (int i = 0; i < MultiplyStation.length; i++) {
-                System.out.println(MultiplyStation[i]);
-            }
-            System.out.println("-------------------------------------------------");
-            for (int i = 0; i < AddStation.length; i++) {
-                System.out.println(AddStation[i]);
-            }
+            // for (int i = 0; i < MultiplyStation.length; i++) {
+            // System.out.println(MultiplyStation[i]);
+            // }
+            // System.out.println("-------------------------------------------------");
+            // for (int i = 0; i < AddStation.length; i++) {
+            // System.out.println(AddStation[i]);
+            // }
             System.out.println("-------------------------------------------------");
 
             Main.clk++;
-        } while (!setOfInstructions.isEmpty());
+        } while (!setOfInstructions.isEmpty() || pointerCache == 0);
     }
 
     public static void updateExecution() {
@@ -498,8 +499,15 @@ public class Main {
                                 pointerCache = 0;
                             }
                             stall = false;
+                            for (int k = 0; k < AddStation.length; k++) {
+                                if (AddStation[k].getInstructionId() == setOfInstructions.get(i).instructionId) {
+                                    AddStation[k].setBusy(0);
+                                    break;
+                                }
+                            }
                             setOfInstructions.remove(setOfInstructions.get(i));
-                            i--;
+                            if (i != 0)
+                                i--;
                         }
                     } else if (setOfInstructions.get(i).opcode.equals("ADDI")) {
                         setOfInstructions.get(i).result = fileOfRegisters
@@ -709,23 +717,23 @@ public class Main {
             int storeNumber = 3;
             System.out.println("Enter the latency of Mul");
             // latencyMul = sc.nextInt();
-            latencyMul = 4;
+            latencyMul = 3;
             System.out.println("Enter the latency of Add.D or Sub.D");
             // latencyAdd = sc.nextInt();
-            latencyAddD = 2;
+            latencyAddD = 3;
             System.out.println("Enter the latency of DAdd");
             // latencyDAdd = sc.nextInt();
-            latencyDAdd = 2;
+            latencyDAdd = 3;
             System.out.println("Enter the latency of Load");
             // latencyLoad = sc.nextInt();
-            latencyLoad = 1;
+            latencyLoad = 3;
             System.out.println("Enter the latency of Store");
             // latencyStore = sc.nextInt();
-            latencyStore = 2;
+            latencyStore = 3;
 
             System.out.println("Enter the latency of Div");
             // latencyDiv = sc.nextInt();
-            latencyDiv = 5;
+            latencyDiv = 3;
 
             latencyAddi = 1;
             latencySubi = 1;
@@ -737,7 +745,7 @@ public class Main {
             StoreStation = new StoreBuffer[storeNumber];
 
             Main main = new Main();
-            Main.printProcessorState();
+            printProcessorState();
         }
     }
 }
