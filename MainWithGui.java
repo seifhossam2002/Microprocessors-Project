@@ -77,6 +77,7 @@ public class MainWithGui extends JFrame {
         do {
             System.out.println("CYCLE " + MainWithGui.clk);
 
+            checkStall();
             fetch();
             issue();
             execute();
@@ -135,6 +136,20 @@ public class MainWithGui extends JFrame {
             MainWithGui.clk++;
         } while (!setOfInstructions.isEmpty() || pointerCache == 0);
     }
+
+
+    private static void checkStall() {
+        Queue<Instruction> temp = new LinkedList<Instruction>();
+        while (!queueInstructions.isEmpty()) {
+            if(queueInstructions.peek().opcode.equals("BNEZ"))
+                stall = true;
+            temp.add(queueInstructions.remove());
+        }
+        while (!temp.isEmpty()) {
+            queueInstructions.add(temp.remove());
+        }
+    }
+
 
     public static void updateExecution() {
         for (int i = 0; i < setOfInstructions.size(); i++) {
@@ -884,6 +899,8 @@ public class MainWithGui extends JFrame {
         nextButton.addActionListener(e -> {
             currentCycle++;
             updateCycleLabel(currentCycle);
+
+            checkStall();
             fetch();
             issue();
 

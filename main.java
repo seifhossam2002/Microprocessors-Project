@@ -1,8 +1,8 @@
 import java.util.*;
 import java.util.Queue;
 
-public class Main{
-    
+public class Main {
+
     static int clk = 1;
     static Memory memory;
     static FileOfRegisters fileOfRegisters;
@@ -42,6 +42,7 @@ public class Main{
         do {
             System.out.println("CYCLE " + Main.clk);
 
+            checkStall();
             fetch();
             issue();
             execute();
@@ -98,7 +99,20 @@ public class Main{
             System.out.println("-------------------------------------------------");
 
             Main.clk++;
-        } while (!setOfInstructions.isEmpty() || pointerCache == 0);
+        } while (!setOfInstructions.isEmpty() || pointerCache == 0 || !queueInstructions.isEmpty()
+                || pointerCache < memory.counter);
+    }
+
+    private static void checkStall() {
+        Queue<Instruction> temp = new LinkedList<Instruction>();
+        while (!queueInstructions.isEmpty()) {
+            if(queueInstructions.peek().opcode.equals("BNEZ"))
+                stall = true;
+            temp.add(queueInstructions.remove());
+        }
+        while (!temp.isEmpty()) {
+            queueInstructions.add(temp.remove());
+        }
     }
 
     public static void updateExecution() {
@@ -722,7 +736,7 @@ public class Main{
             int storeNumber = 1;
             System.out.println("Enter the latency of Mul");
             // latencyMul = sc.nextInt();
-            latencyMul = 1;
+            latencyMul = 3;
             System.out.println("Enter the latency of Add.D or Sub.D");
             // latencyAdd = sc.nextInt();
             latencyAddD = 1;
