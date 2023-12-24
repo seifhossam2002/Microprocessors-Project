@@ -68,35 +68,34 @@ public class Main {
             while (!temp.isEmpty()) {
                 queueInstructions.add(temp.remove());
             }
-            // System.out.println("Load Reservation Stations: ");
-            // for (int i = 0; i < LoadStation.length; i++) {
-            // System.out.println(LoadStation[i]);
-            // }
-            // System.out.println("Store Reservation Stations: ");
-            // for (int i = 0; i < StoreStation.length; i++) {
-            // System.out.println(StoreStation[i]);
-            // }
-            // System.out.println("Add Reservation Stations: ");
-            // for (int i = 0; i < AddStation.length; i++) {
-            // System.out.println(AddStation[i]);
-            // }
-            // System.out.println("Multiply Reservation Stations: ");
-            // for (int i = 0; i < MultiplyStation.length; i++) {
-            // System.out.println(MultiplyStation[i]);
-            // }
-            // System.out.println("File of Registers: ");
-            // for(int i=0;i<fileOfRegisters.size();i++){
-            // System.out.println(fileOfRegisters.get(i));
-            // }
+             System.out.println("Load Reservation Stations: ");
+             for (int i = 0; i < LoadStation.length; i++) {
+             System.out.println(LoadStation[i].getInstructionId()+" "+LoadStation[i].getReservationAreaId()+" "+LoadStation[i].getBusy()+" "+LoadStation[i].getAddress());
+             }
+             System.out.println("Store Reservation Stations: ");
+             for (int i = 0; i < StoreStation.length; i++) {
+             System.out.println(StoreStation[i].getInstructionId()+" "+StoreStation[i].getReservationAreaId()+" "+StoreStation[i].getBusy()+" "+StoreStation[i].getAddress()+" "+StoreStation[i].getValue()+" "+StoreStation[i].getQueue());
+             }
+             System.out.println("Add Reservation Stations: ");
+             for (int i = 0; i < AddStation.length; i++) {
+             System.out.println(AddStation[i]);
+             }
+             System.out.println("Multiply Reservation Stations: ");
+             for (int i = 0; i < MultiplyStation.length; i++) {
+             System.out.println(MultiplyStation[i]);
+             }
+             System.out.println("File of Registers: ");
+             System.out.println(fileOfRegisters.get(1));
             System.out.println("-------------------------------------------------");
-            // for (int i = 0; i < MultiplyStation.length; i++) {
-            // System.out.println(MultiplyStation[i]);
-            // }
-            // System.out.println("-------------------------------------------------");
-            // for (int i = 0; i < AddStation.length; i++) {
-            // System.out.println(AddStation[i]);
-            // }
+             for (int i = 0; i < MultiplyStation.length; i++) {
+             System.out.println(MultiplyStation[i]);
+             }
+             System.out.println("-------------------------------------------------");
+             for (int i = 0; i < AddStation.length; i++) {
+             System.out.println(AddStation[i]);
+             }
             System.out.println("-------------------------------------------------");
+
 
             Main.clk++;
         } while (!setOfInstructions.isEmpty() || pointerCache == 0 || !queueInstructions.isEmpty()
@@ -724,10 +723,10 @@ public class Main {
         try (Scanner sc = new Scanner(System.in)) {
             System.out.println("Enter the Multiply Station number");
             // int multiplyNumber = sc.nextInt();
-            int multiplyNumber = 3;
+            int multiplyNumber = 1;
             System.out.println("Enter the Add Station number");
             // int addNumber = sc.nextInt();
-            int addNumber = 1;
+            int addNumber = 2;
             System.out.println("Enter the Load Station number");
             // int loadNumber = sc.nextInt();
             int loadNumber = 1;
@@ -736,13 +735,13 @@ public class Main {
             int storeNumber = 1;
             System.out.println("Enter the latency of Mul");
             // latencyMul = sc.nextInt();
-            latencyMul = 3;
+            latencyMul = 1;
             System.out.println("Enter the latency of Add.D or Sub.D");
             // latencyAdd = sc.nextInt();
-            latencyAddD = 1;
+            latencyAddD = 2;
             System.out.println("Enter the latency of DAdd");
             // latencyDAdd = sc.nextInt();
-            latencyDAdd = 1;
+            latencyDAdd = 2;
             System.out.println("Enter the latency of Load");
             // latencyLoad = sc.nextInt();
             latencyLoad = 1;

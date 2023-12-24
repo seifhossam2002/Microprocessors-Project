@@ -33,6 +33,6 @@ public class Register {
 
 	@Override
 	public String toString() {
-		return "Register [name=" + name + ", value=" + value + "]";
+		return "Register [name=" + name + ", value=" + value + "queue"+queue+"]";
 	}
 }
